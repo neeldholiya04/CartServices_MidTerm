@@ -16,31 +16,8 @@ import java.util.stream.Collectors;
 public class CartServicesDTO implements CartServices {
     RestTemplate restTemplate = new RestTemplate();
 
-    @Override
-public Cart getCartById(int id) {
-    CartDTO cartDTO = restTemplate.getForObject(
-            "https://fakestoreapi.com/carts/" + id,
-            CartDTO.class
-    );
-    Cart cart = new Cart();
-    cart.setId(cartDTO.getId());
-    cart.setUserId(cartDTO.getUserId());
-    cart.setDate(cartDTO.getDate());
 
-    // map products from CartDTO to Product and add them to Cart
-    Product[] products = Arrays.stream(cartDTO.getProducts())
-            .map(productDTO -> {
-                Product product = new Product();
-                product.setId(productDTO.getProductId());
-                product.setQuantity(productDTO.getQuantity());
-                return product;
-            })
-            .toArray(Product[]::new);
-
-    cart.setProducts(products);
-    return cart;
-}
-
+    // Get All Products
     @Override
     public List<Cart> getAllProducts() {
         CartDTO[] cartDTO = restTemplate.getForObject(
@@ -72,6 +49,34 @@ public Cart getCartById(int id) {
         return null;
     }
 
+
+    // Get Cart By Id
+    @Override
+    public Cart getCartById(int id) {
+        CartDTO cartDTO = restTemplate.getForObject(
+                "https://fakestoreapi.com/carts/" + id,
+                CartDTO.class
+        );
+        Cart cart = new Cart();
+        cart.setId(cartDTO.getId());
+        cart.setUserId(cartDTO.getUserId());
+        cart.setDate(cartDTO.getDate());
+
+        Product[] products = Arrays.stream(cartDTO.getProducts())
+                .map(productDTO -> {
+                    Product product = new Product();
+                    product.setId(productDTO.getProductId());
+                    product.setQuantity(productDTO.getQuantity());
+                    return product;
+                })
+                .toArray(Product[]::new);
+
+        cart.setProducts(products);
+        return cart;
+    }
+
+
+    // Get In Date Range
     @Override
     public List<Cart> getInDateRange(String startDate, String endDate) {
         CartDTO[] cartDTO = restTemplate.getForObject(
@@ -103,6 +108,8 @@ public Cart getCartById(int id) {
         return null;
     }
 
+
+    // Add New Cart
     @Override
     public Cart addNewCart(Cart cart) {
         CartDTO cartDTO = new CartDTO();
@@ -129,6 +136,8 @@ public Cart getCartById(int id) {
         return null;
     }
 
+
+    // Update Cart
     @Override
     public Cart updateCart(Cart cart) {
         CartDTO cartDTO = new CartDTO();
@@ -152,11 +161,15 @@ public Cart getCartById(int id) {
         return null;
     }
 
+
+    // Delete Cart
     @Override
     public void deleteCart(int id) {
         restTemplate.delete("https://fakestoreapi.com/carts/" + id);
     }
 
+
+    // Get Cart By User Id
     @Override
     public List<Cart> getCartByUserId(int userId) {
         CartDTO[] cartDTO = restTemplate.getForObject(
@@ -187,6 +200,4 @@ public Cart getCartById(int id) {
         }
         return null;
     }
-
-
 }
